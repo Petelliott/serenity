@@ -98,6 +98,7 @@ static int install(int argc, char** argv)
         for (size_t j = 0; j < sectors_per_block; ++j) {
             u32 sector = block * sectors_per_block + j;
             size_t offset = sector_vector - 4 * (i * sectors_per_block + j);
+            printf("sector=%u\n", sector);
 
             *reinterpret_cast<u32*>(buffer + offset) = sector;
         }
