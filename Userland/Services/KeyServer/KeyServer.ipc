@@ -1,0 +1,11 @@
+endpoint KeyServer = 3383
+{
+    // Basic protocol
+    Greet() => ()
+
+    AddUsernamePassword([UTF8] String id, [UTF8] String username, [UTF8] String password) => (bool success)
+    GetUsernamePassword([UTF8] String id) => (bool success, bool exists, [UTF8] String username, [UTF8] String password)
+
+    AddKey([UTF8] String id, [UTF8] String key) => (bool success)
+    GetKey([UTF8] String id) => (bool success, bool exists, [UTF8] String key)
+}
