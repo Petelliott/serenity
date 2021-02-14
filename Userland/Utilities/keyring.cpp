@@ -54,7 +54,7 @@ int main(int argc, char** argv)
                 return 1;
             }
 
-            if (!keyring->addUsernamePassword(id, username, password.value())) {
+            if (!keyring->add_username_password(id, username, password.value())) {
                 warnln("unable to access keyring");
                 return 1;
             }
@@ -65,19 +65,19 @@ int main(int argc, char** argv)
                 return 1;
             }
 
-            if (!keyring->addKey(id, key.value())) {
+            if (!keyring->add_key(id, key.value())) {
                 warnln("unable to access keyring");
                 return 1;
             }
         }
     } else {
-        auto username_password = keyring->getUsernamePassword(id);
+        auto username_password = keyring->get_username_password(id);
         if (!username_password.success) {
             warnln("unable to access keyring");
             return 1;
         }
 
-        auto key = keyring->getKey(id);
+        auto key = keyring->get_key(id);
         if (!key.success) {
             warnln("unable to access keyring");
             return 1;

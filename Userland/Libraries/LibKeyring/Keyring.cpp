@@ -43,12 +43,12 @@ void Keyring::handle(const Messages::KeyClient::Dummy&)
 {
 }
 
-bool Keyring::addUsernamePassword(const StringView& id, const StringView& username, const StringView& password)
+bool Keyring::add_username_password(const StringView& id, const StringView& username, const StringView& password)
 {
     return send_sync<Messages::KeyServer::AddUsernamePassword>(id, username, password)->success();
 }
 
-UsernamePassword Keyring::getUsernamePassword(const StringView& id)
+UsernamePassword Keyring::get_username_password(const StringView& id)
 {
     auto result = send_sync<Messages::KeyServer::GetUsernamePassword>(id);
     return UsernamePassword {
@@ -59,13 +59,13 @@ UsernamePassword Keyring::getUsernamePassword(const StringView& id)
     };
 }
 
-bool Keyring::addKey(const StringView& id, const StringView& key)
+bool Keyring::add_key(const StringView& id, const StringView& key)
 {
 
     return send_sync<Messages::KeyServer::AddKey>(id, key)->success();
 }
 
-Key Keyring::getKey(const StringView& id)
+Key Keyring::get_key(const StringView& id)
 {
     auto result = send_sync<Messages::KeyServer::GetKey>(id);
     return Key {

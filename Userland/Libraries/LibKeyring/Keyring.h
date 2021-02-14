@@ -52,11 +52,11 @@ class Keyring : public IPC::ServerConnection<KeyClientEndpoint, KeyServerEndpoin
 public:
     virtual void handshake() override;
 
-    bool addUsernamePassword(const StringView& id, const StringView& username, const StringView& password);
-    UsernamePassword getUsernamePassword(const StringView& id);
+    bool add_username_password(const StringView& id, const StringView& username, const StringView& password);
+    UsernamePassword get_username_password(const StringView& id);
 
-    bool addKey(const StringView& id, const StringView& key);
-    Key getKey(const StringView& id);
+    bool add_key(const StringView& id, const StringView& key);
+    Key get_key(const StringView& id);
 
 private:
     Keyring();
