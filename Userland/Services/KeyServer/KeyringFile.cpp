@@ -58,17 +58,6 @@ bool KeyringFile::open()
     m_key_object = json.get("keys").as_object();
 
     return true;
-    /*
-    auto iv = ByteBuffer::create_zeroed(Crypto::Cipher::AESCipher::block_size());
-
-    Crypto::Cipher::AESCipher::CBCMode cipher(
-        m_password.bytes(),
-        256,
-        Crypto::Cipher::Intent::Decryption);
-
-
-    auto
-    */
 }
 
 bool KeyringFile::sync()
