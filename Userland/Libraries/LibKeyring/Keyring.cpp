@@ -28,50 +28,41 @@
 
 namespace Keyring {
 
+using ServerConnection = IPC::ServerConnection<KeyClientEndpoint, KeyServerEndpoint>;
+
 Keyring::Keyring()
-    : IPC::ServerConnection<KeyClientEndpoint, KeyServerEndpoint>(*this, "/tmp/portal/keyserver")
-{
-    handshake();
-}
-
-void Keyring::handshake()
-{
-    send_sync<Messages::KeyServer::Greet>();
-}
-
-void Keyring::handle(const Messages::KeyClient::Dummy&)
+    : ServerConnection(*this, "/tmp/portal/keyserver")
 {
 }
 
 bool Keyring::add_username_password(const StringView& id, const StringView& username, const StringView& password)
 {
-    return send_sync<Messages::KeyServer::AddUsernamePassword>(id, username, password)->success();
+    return ServerConnection::add_username_password(id, username, password);
 }
 
 UsernamePassword Keyring::get_username_password(const StringView& id)
 {
-    auto result = send_sync<Messages::KeyServer::GetUsernamePassword>(id);
+    auto result = ServerConnection::get_username_password(id);
     return UsernamePassword {
-        .success = result->success(),
-        .exists = result->exists(),
-        .username = result->username(),
-        .password = result->password()
+        .success = result.success(),
+        .exists = result.exists(),
+        .username = result.username(),
+        .password = result.password()
     };
 }
 
 bool Keyring::add_key(const StringView& id, const StringView& key)
 {
-
-    return send_sync<Messages::KeyServer::AddKey>(id, key)->success();
+    return ServerConnection::add_key(id, key);
 }
 
 Key Keyring::get_key(const StringView& id)
 {
-    auto result = send_sync<Messages::KeyServer::GetKey>(id);
+    auto result = ServerConnection::get_key(id);
     return Key {
-        .success = result->success(),
-        .exists = result->exists(),
-        .key = result->key()
+        .success = result.success(),
+        .exists = result.exists(),
+        .key = result.key()
     };
 }
 

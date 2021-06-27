@@ -50,8 +50,6 @@ class Keyring : public IPC::ServerConnection<KeyClientEndpoint, KeyServerEndpoin
     C_OBJECT(Keyring);
 
 public:
-    virtual void handshake() override;
-
     bool add_username_password(const StringView& id, const StringView& username, const StringView& password);
     UsernamePassword get_username_password(const StringView& id);
 
@@ -60,8 +58,6 @@ public:
 
 private:
     Keyring();
-
-    virtual void handle(const Messages::KeyClient::Dummy&) override;
 };
 
 }
