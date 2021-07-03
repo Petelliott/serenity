@@ -1,3 +1,8 @@
+serenity_component(
+    KeyServer
+    TARGETS KeyServer
+)
+
 compile_ipc(KeyServer.ipc KeyServerEndpoint.h)
 compile_ipc(KeyClient.ipc KeyClientEndpoint.h)
 

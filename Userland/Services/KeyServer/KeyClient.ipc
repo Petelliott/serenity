@@ -1,4 +1,3 @@
-endpoint KeyClient = 3382
+endpoint KeyClient
 {
-    Dummy() =|
 }

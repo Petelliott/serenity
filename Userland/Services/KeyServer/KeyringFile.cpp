@@ -41,7 +41,7 @@ bool KeyringFile::open()
     if (!Core::File::exists(m_path))
         return true;
 
-    auto file_or_error = Core::File::open(m_path, Core::IODevice::OpenMode::ReadOnly);
+    auto file_or_error = Core::File::open(m_path, Core::OpenMode::ReadOnly);
     if (file_or_error.is_error()) {
         dbgln("KeryingFile: failed to open path {} for reading: {}", m_path, file_or_error.error());
         return false;
@@ -62,7 +62,7 @@ bool KeyringFile::open()
 
 bool KeyringFile::sync()
 {
-    auto file_or_error = Core::File::open(m_path, Core::IODevice::OpenMode::WriteOnly);
+    auto file_or_error = Core::File::open(m_path, Core::OpenMode::WriteOnly);
     if (file_or_error.is_error()) {
         dbgln("KeryingFile: failed to open path {} for writing: {}", m_path, file_or_error.error());
         return false;

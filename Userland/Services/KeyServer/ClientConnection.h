@@ -44,13 +44,12 @@ public:
 private:
     explicit ClientConnection(NonnullRefPtr<Core::LocalSocket>, int client_id, const StringView& path);
 
-    virtual OwnPtr<Messages::KeyServer::GreetResponse> handle(const Messages::KeyServer::Greet&) override;
+    virtual Messages::KeyServer::AddUsernamePasswordResponse add_username_password(String const& id, String const& username, String const& password) override;
 
-    virtual OwnPtr<Messages::KeyServer::AddUsernamePasswordResponse> handle(const Messages::KeyServer::AddUsernamePassword&) override;
-    virtual OwnPtr<Messages::KeyServer::GetUsernamePasswordResponse> handle(const Messages::KeyServer::GetUsernamePassword&) override;
+    virtual Messages::KeyServer::GetUsernamePasswordResponse get_username_password(String const& id) override;
 
-    virtual OwnPtr<Messages::KeyServer::AddKeyResponse> handle(const Messages::KeyServer::AddKey&) override;
-    virtual OwnPtr<Messages::KeyServer::GetKeyResponse> handle(const Messages::KeyServer::GetKey&) override;
+    virtual Messages::KeyServer::AddKeyResponse add_key(String const& id, String const& key) override;
+    virtual Messages::KeyServer::GetKeyResponse get_key(String const& id) override;
 
     KeyringFile* get_keyring();
 

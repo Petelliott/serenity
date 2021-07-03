@@ -49,68 +49,64 @@ void ClientConnection::die()
     s_connections.remove(client_id());
 }
 
-OwnPtr<Messages::KeyServer::GreetResponse> ClientConnection::handle(const Messages::KeyServer::Greet&)
-{
-    return make<Messages::KeyServer::GreetResponse>();
-}
 
-OwnPtr<Messages::KeyServer::AddUsernamePasswordResponse> ClientConnection::handle(const Messages::KeyServer::AddUsernamePassword& message)
+Messages::KeyServer::AddUsernamePasswordResponse ClientConnection::add_username_password(String const& id, String const& username, String const& password)
 {
     auto keyring = get_keyring();
     if (!keyring)
-        return make<Messages::KeyServer::AddUsernamePasswordResponse>(false);
+        return Messages::KeyServer::AddUsernamePasswordResponse(false);
 
     JsonObject entry;
-    entry.set("username", message.username());
-    entry.set("password", message.password());
+    entry.set("username", username);
+    entry.set("password", password);
 
-    keyring->username_object().set(message.id(), entry);
+    keyring->username_object().set(id, entry);
     keyring->sync();
 
-    return make<Messages::KeyServer::AddUsernamePasswordResponse>(true);
+    return Messages::KeyServer::AddUsernamePasswordResponse(true);
 }
 
-OwnPtr<Messages::KeyServer::GetUsernamePasswordResponse> ClientConnection::handle(const Messages::KeyServer::GetUsernamePassword& message)
+Messages::KeyServer::GetUsernamePasswordResponse ClientConnection::get_username_password(String const& id)
 {
     auto keyring = get_keyring();
     if (!keyring)
-        return make<Messages::KeyServer::GetUsernamePasswordResponse>(false, false, "", "");
+        return Messages::KeyServer::GetUsernamePasswordResponse(false, false, "", "");
 
-    auto entry = keyring->username_object().get(message.id());
+    auto entry = keyring->username_object().get(id);
 
     if (entry.is_null())
-        return make<Messages::KeyServer::GetUsernamePasswordResponse>(true, false, "", "");
+        return Messages::KeyServer::GetUsernamePasswordResponse(true, false, "", "");
 
-    return make<Messages::KeyServer::GetUsernamePasswordResponse>(
+    return Messages::KeyServer::GetUsernamePasswordResponse(
         true, true,
         entry.as_object().get("username").as_string(),
         entry.as_object().get("password").as_string());
 }
 
-OwnPtr<Messages::KeyServer::AddKeyResponse> ClientConnection::handle(const Messages::KeyServer::AddKey& message)
+Messages::KeyServer::AddKeyResponse ClientConnection::add_key(String const& id, String const& key)
 {
     auto keyring = get_keyring();
     if (!keyring)
-        return make<Messages::KeyServer::AddKeyResponse>(false);
+        return Messages::KeyServer::AddKeyResponse(false);
 
-    keyring->key_object().set(message.id(), message.key());
+    keyring->key_object().set(id, key);
     keyring->sync();
 
-    return make<Messages::KeyServer::AddKeyResponse>(true);
+    return Messages::KeyServer::AddKeyResponse(true);
 }
 
-OwnPtr<Messages::KeyServer::GetKeyResponse> ClientConnection::handle(const Messages::KeyServer::GetKey& message)
+Messages::KeyServer::GetKeyResponse ClientConnection::get_key(String const& id)
 {
     auto keyring = get_keyring();
     if (!keyring)
-        return make<Messages::KeyServer::GetKeyResponse>(false, false, "");
+        return Messages::KeyServer::GetKeyResponse(false, false, "");
 
-    auto entry = keyring->key_object().get(message.id());
+    auto entry = keyring->key_object().get(id);
 
     if (entry.is_null())
-        return make<Messages::KeyServer::GetKeyResponse>(true, false, "");
+        return Messages::KeyServer::GetKeyResponse(true, false, "");
 
-    return make<Messages::KeyServer::GetKeyResponse>(true, true, entry.as_string());
+    return Messages::KeyServer::GetKeyResponse(true, true, entry.as_string());
 }
 
 KeyringFile* ClientConnection::get_keyring()
@@ -120,7 +116,7 @@ KeyringFile* ClientConnection::get_keyring()
 
     String password;
     // FIXME: Hide the text of the password.
-    auto result = GUI::InputBox::show(password, nullptr, "Password", "Enter your keyring password");
+    auto result = GUI::InputBox::show(nullptr, password, "Password", "Enter your keyring password");
     if (result != GUI::InputBox::ExecOK)
         return nullptr;
 
