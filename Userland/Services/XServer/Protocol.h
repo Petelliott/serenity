@@ -126,4 +126,106 @@ struct ConnectionSetupSuccess {
     KeyCode min_keycode, max_keycode;
 };
 
+struct Request {
+    enum class Opcode : Card8 {
+        InternAtom = 16,
+        GetProperty = 20,
+        CreateGC = 55,
+        QueryColors = 91,
+        QueryExtension = 98,
+    };
+
+    Opcode opcode;
+    ByteBuffer data;
+    size_t sequence_number;
+
+    void add_metadata(Request const& request)
+    {
+        *this = request;
+    }
+};
+
+struct Reply {
+    size_t sequence_number;
+};
+
+struct InternAtomRequest : Request {
+    String8 name;
+    Bool only_if_exists;
+};
+
+struct InternAtomReply : Reply {
+    Atom atom;
+};
+
+struct GetPropertyRequest : Request {
+    Window window;
+    Atom property;
+    Atom type;
+    Card32 long_offset, long_length;
+    Bool should_delete;
+};
+
+struct GetPropertyReply : Reply {
+    Atom type;
+    Card8 format;
+    Card32 bytes_after;
+    // FIXME: allow Int16 and Int32 values.
+    ListOf<Int8> value;
+};
+
+/*
+struct CreateGCRequest : Request {
+    GContext cid;
+    Drawable drawable;
+
+    enum class ValueType : Card32 {
+        Function = 0,
+        PlaneMask = 1,
+        Foreground = 2,
+        Background = 3,
+        LineWidth = 4,
+        LineStyle = 5,
+        CapStyle = 6,
+        JoinStyle = 7,
+        FillStyle = 8,
+        FillRule = 9,
+        Tile = 10,
+        Stipple = 11,
+        TileStippleXOrigin = 12,
+        TileStippleYOrigin = 13,
+        Font = 14,
+        SubwindowMode = 15,
+        GraphicsExposures = 16,
+        ClipXOrigin = 17,
+        ClipYOrigin = 18,
+        ClipMask = 19,
+        DashOffset = 20,
+        Dashes = 21,
+        ArcMode = 22
+    }
+
+};
+*/
+
+struct QueryColorsRequest : Request {
+    struct RGB {
+        Card16 red, green, blue;
+    };
+
+    Colormap cmap;
+    ListOf<>
+};
+
+struct QueryExtensionRequest : Request {
+    String8 name;
+};
+
+struct QueryExtensionReply : Reply {
+    Bool present;
+    Card8 major_opcode;
+    Card8 first_event;
+    Card8 first_error;
+};
+
 }

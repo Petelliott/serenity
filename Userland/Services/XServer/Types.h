@@ -7,6 +7,7 @@
 #pragma once
 
 #include <AK/ByteBuffer.h>
+#include <AK/String.h>
 #include <AK/Utf16View.h>
 #include <AK/Utf8View.h>
 #include <AK/Vector.h>
@@ -154,6 +155,7 @@ size_t wire_sizeof(SetOf<T> const&)
 
 typedef u32 Window;
 typedef u32 PixMap;
+typedef u32 Drawable;
 typedef u32 Cursor;
 typedef u32 Font;
 typedef u32 GContext;
@@ -209,6 +211,30 @@ enum class Event : Card32 {
     PropertyChange = 22,
     ColormapChange = 23,
     OwnerGrabButton = 24,
+};
+
+class Atom {
+public:
+    Atom() {};
+    Atom(StringView const&);
+    Atom(String8 const&);
+    Atom(Card32 value)
+        : m_value(value)
+    {
+    }
+
+    Card32 value() const { return m_value; }
+    String const& text() const;
+
+    bool operator==(Atom const& other) const { return value() == other.value(); }
+    static Atom null() { return Atom(0); }
+    static Atom only_if_exists(String8 const&);
+
+private:
+    Card32 m_value { 0 };
+
+    static HashMap<String, Card32> s_mappings;
+    static Card32 s_next_atom;
 };
 
 }

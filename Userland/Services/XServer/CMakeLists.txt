@@ -8,6 +8,7 @@ set(SOURCES
     main.cpp
     Protocol.cpp
     ScreenLayout.cpp
+    Types.cpp
 )
 
 serenity_bin(XServer)

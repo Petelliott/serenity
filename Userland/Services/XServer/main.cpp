@@ -26,7 +26,7 @@ int main()
             return;
         }
         auto client = X::Client::construct(client_socket.release_nonnull(), server);
-        client->do_handshake();
+        client->start();
     };
 
     return loop.exec();

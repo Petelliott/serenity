@@ -23,14 +23,33 @@ class Client final
     C_OBJECT(Client);
 
 public:
-    void do_handshake();
+    void start();
 
 private:
     Client(NonnullRefPtr<Core::Socket>, Core::Object* parent);
     void die();
 
+    void do_handshake();
     Optional<ConnectionSetup> read_connection_setup();
     bool write_connection_success();
+    Optional<Request> read_request();
+    void handle_request();
+
+    template<typename T>
+    void send_reply(Request const& request, T& reply)
+    {
+        reply.sequence_number = request.sequence_number;
+        auto buffer = serialize(reply);
+        if (!m_socket->write(buffer)) {
+            dbgln("Can't write reply: {}", strerror(errno));
+            // FIXME: Raise an error.
+            die();
+        }
+    }
+
+    void get_property(GetPropertyRequest const& request);
+    void query_extension(QueryExtensionRequest const& request);
+    void intern_atom(InternAtomRequest const& request);
 
     virtual void fast_greet(Vector<Gfx::IntRect> const&, u32, u32, u32, Core::AnonymousBuffer const&, String const&, String const&, i32) override;
     virtual void paint(i32, Gfx::IntSize const&, Vector<Gfx::IntRect> const&) override;
@@ -65,6 +84,8 @@ private:
     virtual void ping() override;
 
     NonnullRefPtr<Core::Socket> m_socket;
+    size_t m_sequence_number { 0 };
+    bool m_handshook { false };
 };
 
 }

@@ -32,45 +32,54 @@ void Client::die()
     });
 }
 
-void Client::do_handshake()
+void Client::start()
 {
     m_socket->on_ready_to_read = [this] {
-        auto endianness_byte = m_socket->read(sizeof(ByteOrderByte));
-        if (endianness_byte.size() != sizeof(ByteOrderByte)) {
-            die();
-            return;
+        if (!m_handshook) {
+            do_handshake();
+        } else {
+            handle_request();
         }
-        auto endianness = deserialize<ByteOrderByte>(endianness_byte, 0);
-
-        // FIXME: Support variable endianness.
-        if (endianness != ByteOrderByte::Little) {
-            dbgln("Invalid Byte Order: '{}'", to_underlying(endianness));
-            die();
-            return;
-        }
-
-        auto setup = read_connection_setup();
-        if (!setup.has_value()) {
-            die();
-            return;
-        }
-
-        if (setup.value().protocol_major_version != 11) {
-            dbgln("Invalid X protocol version: {}.{} (Seriously? what year is it?)",
-                setup.value().protocol_major_version,
-                setup.value().protocol_minor_version);
-            die();
-            return;
-        }
-
-        if (!write_connection_success()) {
-            dbgln("failed to write connection setup: {}", strerror(errno));
-            die();
-            return;
-        }
-
-        die();
     };
+}
+
+void Client::do_handshake()
+{
+    auto endianness_byte = m_socket->read(sizeof(ByteOrderByte));
+    if (endianness_byte.size() != sizeof(ByteOrderByte)) {
+        die();
+        return;
+    }
+    auto endianness = deserialize<ByteOrderByte>(endianness_byte, 0);
+
+    // FIXME: Support variable endianness.
+    if (endianness != ByteOrderByte::Little) {
+        dbgln("Invalid Byte Order: '{}'", to_underlying(endianness));
+        die();
+        return;
+    }
+
+    auto setup = read_connection_setup();
+    if (!setup.has_value()) {
+        die();
+        return;
+    }
+
+    if (setup.value().protocol_major_version != 11) {
+        dbgln("Invalid X protocol version: {}.{} (Seriously? what year is it?)",
+            setup.value().protocol_major_version,
+            setup.value().protocol_minor_version);
+        die();
+        return;
+    }
+
+    if (!write_connection_success()) {
+        dbgln("failed to write connection setup: {}", strerror(errno));
+        die();
+        return;
+    }
+
+    m_handshook = true;
 }
 
 Optional<ConnectionSetup> Client::read_connection_setup()
@@ -163,6 +172,90 @@ bool Client::write_connection_success()
     // Serialize and write the message.
     auto buffer = serialize(setup);
     return m_socket->write(buffer);
+}
+
+Optional<Request> Client::read_request()
+{
+    Request request;
+
+    request.data = m_socket->read(4);
+    if (request.data.size() != 4)
+        return {};
+
+    request.opcode = deserialize<Request::Opcode>(request.data, 0);
+    size_t remaining_length = 4 * (deserialize<Card16>(request.data, 2) - 1);
+
+    ByteBuffer rest = m_socket->read(remaining_length);
+    if (rest.size() != remaining_length)
+        return {};
+
+    request.data.append(rest);
+    request.sequence_number = ++m_sequence_number;
+    return request;
+}
+
+template<typename T>
+static T decode_request(Request const& request)
+{
+    auto full_request = deserialize<T>(request.data, 0);
+    full_request.add_metadata(request);
+    return full_request;
+}
+
+void Client::handle_request()
+{
+    auto request = read_request();
+    if (!request.has_value()) {
+        dbgln("failed to read request from client socket");
+        die();
+        return;
+    }
+
+    switch (request.value().opcode) {
+    case Request::Opcode::InternAtom:
+        intern_atom(decode_request<InternAtomRequest>(request.value()));
+        return;
+    case Request::Opcode::GetProperty:
+        get_property(decode_request<GetPropertyRequest>(request.value()));
+        return;
+    case Request::Opcode::QueryExtension:
+        query_extension(decode_request<QueryExtensionRequest>(request.value()));
+        return;
+    default:
+        dbgln("UNKNOWN REQUEST: opcode = {}, length = {}", to_underlying(request.value().opcode), request.value().data.size());
+    }
+}
+
+void Client::get_property(GetPropertyRequest const& request)
+{
+
+    GetPropertyReply reply;
+    reply.format = 8;
+
+    dbgln("GetProperty: unsupported property: {}", request.property.text());
+    reply.bytes_after = 0;
+    reply.type = Atom::null();
+    send_reply(request, reply);
+}
+
+void Client::query_extension(QueryExtensionRequest const& request)
+{
+    QueryExtensionReply reply;
+
+    dbgln("unsuported extension, name = {}", request.name.utf8().as_string());
+    reply.present = false;
+    send_reply(request, reply);
+}
+
+void Client::intern_atom(InternAtomRequest const& request)
+{
+    InternAtomReply reply;
+    if (request.only_if_exists) {
+        reply.atom = Atom::only_if_exists(request.name);
+    } else {
+        reply.atom = Atom(request.name);
+    }
+    send_reply(request, reply);
 }
 
 void Client::fast_greet(Vector<Gfx::IntRect> const&, u32, u32, u32, Core::AnonymousBuffer const&, String const&, String const&, i32) { }

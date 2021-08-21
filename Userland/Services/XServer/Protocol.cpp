@@ -124,4 +124,76 @@ void serialize(ByteBuffer& buffer, ConnectionSetupSuccess const& setup)
     serialize(buffer, setup.roots);
 }
 
+template<>
+InternAtomRequest deserialize(ReadonlyBytes const& bytes, size_t offset)
+{
+    InternAtomRequest request;
+    request.only_if_exists = deserialize<Card8>(bytes, offset + 1);
+    size_t n = deserialize<Card16>(bytes, offset + 4);
+    request.name = String8::deserialize_n(bytes, offset + 8, n);
+    return request;
+}
+
+template<>
+void serialize(ByteBuffer& buffer, InternAtomReply const& reply)
+{
+    serialize<Card8>(buffer, 1);
+    pad(buffer, 1);
+    serialize<Card16>(buffer, reply.sequence_number);
+    serialize<Card32>(buffer, 0);
+    serialize<Atom>(buffer, reply.atom);
+    pad(buffer, 20);
+}
+
+template<>
+GetPropertyRequest deserialize(ReadonlyBytes const& bytes, size_t offset)
+{
+    GetPropertyRequest request;
+    request.should_delete = deserialize<Bool>(bytes, offset + 1);
+    request.window = deserialize<Bool>(bytes, offset + 4);
+    request.property = deserialize<Atom>(bytes, offset + 8);
+    request.type = deserialize<Atom>(bytes, offset + 12);
+    request.long_offset = deserialize<Card32>(bytes, offset + 16);
+    request.long_length = deserialize<Card32>(bytes, offset + 20);
+    return request;
+}
+
+template<>
+void serialize(ByteBuffer& buffer, GetPropertyReply const& reply)
+{
+    serialize<Card8>(buffer, 1);
+    serialize(buffer, reply.format);
+    serialize<Card16>(buffer, reply.sequence_number);
+    serialize<Card32>(buffer, aligned(4, reply.value.size()) / 4);
+    serialize(buffer, reply.type);
+    serialize(buffer, reply.bytes_after);
+    serialize<Card32>(buffer, reply.value.size() / reply.format);
+    pad(buffer, 12);
+    serialize(buffer, reply.value);
+    pad(buffer, align(4, reply.value.size()));
+}
+
+template<>
+QueryExtensionRequest deserialize(ReadonlyBytes const& bytes, size_t offset)
+{
+    QueryExtensionRequest request;
+    auto name_len = deserialize<Card16>(bytes, offset + 4);
+    request.name = String8::deserialize_n(bytes, offset + 8, name_len);
+    return request;
+}
+
+template<>
+void serialize(ByteBuffer& buffer, QueryExtensionReply const& reply)
+{
+    serialize<Card8>(buffer, 1);
+    pad(buffer, 1);
+    serialize<Card16>(buffer, reply.sequence_number);
+    serialize<Card32>(buffer, 0);
+    serialize(buffer, reply.present);
+    serialize(buffer, reply.major_opcode);
+    serialize(buffer, reply.first_event);
+    serialize(buffer, reply.first_error);
+    pad(buffer, 20);
+}
+
 }
