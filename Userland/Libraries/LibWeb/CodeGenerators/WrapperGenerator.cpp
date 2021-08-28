@@ -695,6 +695,12 @@ static void generate_to_cpp(SourceGenerator& generator, ParameterType& parameter
         @return_statement@
     }
 )~~~");
+    } else if (parameter.type.name == "Object") {
+        scoped_generator.append(R"~~~(
+    JS::Object @cpp_name@ = @js_name@@js_suffix@.to_object()
+    if (vm.exception())
+        @return_statement@
+)~~~");
     } else {
         dbgln("Unimplemented JS-to-C++ conversion: {}", parameter.type.name);
         VERIFY_NOT_REACHED();
@@ -776,6 +782,8 @@ static void generate_header(IDL::Interface const& interface)
 #    include <LibWeb/HighResolutionTime/@name@.h>
 #elif __has_include(<LibWeb/NavigationTiming/@name@.h>)
 #    include <LibWeb/NavigationTiming/@name@.h>
+#elif __has_include(<LibWeb/Notifications/@name@.h>)
+#    include <LibWeb/Notifications/@name@.h>
 #elif __has_include(<LibWeb/SVG/@name@.h>)
 #    include <LibWeb/SVG/@name@.h>
 #elif __has_include(<LibWeb/XHR/@name@.h>)

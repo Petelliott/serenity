@@ -9,6 +9,8 @@ set(SOURCES
     Bindings/MainThreadVM.cpp
     Bindings/NavigatorObject.cpp
     Bindings/NodeWrapperFactory.cpp
+    Bindings/NotificationConstructor.cpp
+    Bindings/NotificationObject.cpp
     Bindings/ScriptExecutionContext.cpp
     Bindings/WindowObject.cpp
     Bindings/Wrappable.cpp
@@ -409,6 +411,7 @@ libweb_js_wrapper(HTML/SubmitEvent)
 libweb_js_wrapper(HTML/WebSocket)
 libweb_js_wrapper(HighResolutionTime/Performance)
 libweb_js_wrapper(NavigationTiming/PerformanceTiming)
+libweb_js_wrapper(Notifications/Notification)
 libweb_js_wrapper(SVG/SVGElement)
 libweb_js_wrapper(SVG/SVGGeometryElement)
 libweb_js_wrapper(SVG/SVGGraphicsElement)
