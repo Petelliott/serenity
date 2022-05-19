@@ -39,7 +39,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     auto widget = TRY(window->try_set_main_widget<ChessWidget>());
 
     TRY(Core::System::unveil("/res", "r"));
-    TRY(Core::System::unveil("/bin/ChessEngine", "x"));
+    // Chess should be able to execute any engine, anywhere on the system.
+    TRY(Core::System::unveil("/", "x"));
     TRY(Core::System::unveil("/etc/passwd", "r"));
     TRY(Core::System::unveil("/tmp/portal/launch", "rw"));
     TRY(Core::System::unveil(Core::StandardPaths::home_directory().characters(), "wcbr"));
@@ -171,12 +172,17 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     GUI::ActionGroup engines_action_group;
     engines_action_group.set_exclusive(true);
     auto engine_submenu = TRY(engine_menu->try_add_submenu("&Engine"));
-    for (auto const& engine : { "Human", "ChessEngine" }) {
-        auto action = GUI::Action::create_checkable(engine, [&](auto& action) {
+
+    auto engines = Config::list_keys("Chess", "Engines");
+    engines.prepend("Human");
+
+    for (auto const& engine : engines) {
+        auto engine_executable = Config::read_string("Chess", "Engines", engine, "/bin/false");
+        auto action = GUI::Action::create_checkable(engine, [engine_executable, &widget](auto& action) {
             if (action.text() == "Human") {
                 widget->set_engine(nullptr);
             } else {
-                widget->set_engine(Engine::construct(action.text()));
+                widget->set_engine(Engine::construct(engine_executable));
                 widget->input_engine_move();
             }
         });
