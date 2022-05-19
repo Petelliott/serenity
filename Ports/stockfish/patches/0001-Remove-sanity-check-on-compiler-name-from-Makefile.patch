@@ -1,0 +1,25 @@
+From 67c5a8962993cd1649d5be1e36a043bffde93437 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Wed, 18 May 2022 18:47:06 -0600
+Subject: [PATCH] Remove sanity check on compiler name from Makefile
+
+---
+ src/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index eff8bac..a3251d7 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -917,8 +917,6 @@ config-sanity: net
+ 	@test "$(vnni256)" = "yes" || test "$(vnni256)" = "no"
+ 	@test "$(vnni512)" = "yes" || test "$(vnni512)" = "no"
+ 	@test "$(neon)" = "yes" || test "$(neon)" = "no"
+-	@test "$(comp)" = "gcc" || test "$(comp)" = "icc" || test "$(comp)" = "mingw" || test "$(comp)" = "clang" \
+-	|| test "$(comp)" = "armv7a-linux-androideabi16-clang"  || test "$(comp)" = "aarch64-linux-android21-clang"
+ 
+ $(EXE): $(OBJS)
+ 	+$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+-- 
+2.36.1
+
