@@ -63,12 +63,15 @@ void Endpoint::set_in_notifier()
 {
     m_in_notifier = Core::Notifier::construct(m_in->fd(), Core::Notifier::Read);
     m_in_notifier->on_ready_to_read = [this] {
-        while (m_in->can_read_line())
-            Core::EventLoop::current().post_event(*this, read_command());
+        while (m_in->can_read_line()) {
+            auto command = read_command();
+            if (command)
+                Core::EventLoop::current().post_event(*this, command.release_nonnull());
+        }
     };
 }
 
-NonnullOwnPtr<Command> Endpoint::read_command()
+OwnPtr<Command> Endpoint::read_command()
 {
     String line(ReadonlyBytes(m_in->read_line(4096).bytes()), Chomp);
 
@@ -100,8 +103,8 @@ NonnullOwnPtr<Command> Endpoint::read_command()
         return make<InfoCommand>(InfoCommand::from_string(line));
     }
 
-    dbgln("command line: {}", line);
-    VERIFY_NOT_REACHED();
+    // UCI expects us to ignore invalid commands.
+    return nullptr;
 }
 
 };

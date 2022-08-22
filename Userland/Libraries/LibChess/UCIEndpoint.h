@@ -51,7 +51,7 @@ protected:
 
 private:
     void set_in_notifier();
-    NonnullOwnPtr<Command> read_command();
+    OwnPtr<Command> read_command();
 
     RefPtr<Core::IODevice> m_in;
     RefPtr<Core::IODevice> m_out;
