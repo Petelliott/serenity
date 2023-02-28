@@ -685,16 +685,34 @@ long long int llabs(long long int i)
     return i < 0 ? -i : i;
 }
 
+static long int s_next_random = 1;
+
 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/random.html
 long int random()
 {
-    return rand();
+    s_next_random = s_next_random * 1103515245 + 12345;
+    return ((unsigned)(s_next_random / ((RAND_MAX + 1) * 2)) % (RAND_MAX + 1));
 }
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/srandom.html
 void srandom(unsigned seed)
 {
-    srand(seed);
+    s_next_random = seed;
+}
+
+// https://pubs.opengroup.org/onlinepubs/9699919799/functions/initstate.html
+char* initstate(unsigned int seed, char*, size_t)
+{
+    // FIXME: use a prng with customizable states.
+    s_next_random = seed;
+    return nullptr;
+}
+
+// https://pubs.opengroup.org/onlinepubs/9699919799/functions/setstate.html
+char* setstate(char*)
+{
+    // FIXME: use a prng with customizable states.
+    return nullptr;
 }
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/system.html

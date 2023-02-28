@@ -75,6 +75,8 @@ void srand(unsigned seed);
 
 long int random(void);
 void srandom(unsigned seed);
+char* initstate(unsigned int seed, char* state, size_t n);
+char* setstate(char* state);
 
 uint32_t arc4random(void);
 void arc4random_buf(void*, size_t);
