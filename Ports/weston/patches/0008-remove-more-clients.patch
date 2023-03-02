@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 13:29:15 -0700
+Subject: [PATCH] remove more clients
+
+---
+ clients/meson.build | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/clients/meson.build b/clients/meson.build
+index baf89edfccbbad618333172cb76e5f3785e9cbe7..ea5a0a3664f32ecaf235b422f255f2812acab5ed 100644
+--- a/clients/meson.build
++++ b/clients/meson.build
+@@ -175,10 +175,6 @@ endforeach
+ 
+ demo_clients = [
+ 	{ 'basename': 'clickdot' },
+-	{
+-		'basename': 'cliptest',
+-		'dep_objs': dep_vertex_clipping
+-	},
+ 	{ 'basename': 'confine' },
+ 	{
+ 		'basename': 'content_protection',

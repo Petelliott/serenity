@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 12:36:14 -0700
+Subject: [PATCH] Build without libutil
+
+---
+ clients/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/clients/meson.build b/clients/meson.build
+index 8e6446a81432d5f8e02d0f4e1455bd4df6b7208c..5186c641716ac8c463a0dc737697517e910a5d25 100644
+--- a/clients/meson.build
++++ b/clients/meson.build
+@@ -22,7 +22,7 @@ deps_toytoolkit = [
+ 	dep_lib_cairo_shared,
+ 	dep_xkbcommon,
+ 	dependency('wayland-cursor'),
+-	cc.find_library('util'),
++    #cc.find_library('util'),
+ ]
+ lib_toytoolkit = static_library(
+ 	'toytoolkit',

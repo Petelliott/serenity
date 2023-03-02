@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Fri, 17 Feb 2023 00:51:02 -0700
+Subject: [PATCH] Put pkg-config file in libdir
+
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index ab55c7f74e879f41721bf2315ca6aca2305a4069..9a2949c2cc0f8a82d9e565dbcab9cf569e68d4da 100644
+--- a/meson.build
++++ b/meson.build
+@@ -98,7 +98,7 @@ pkgconfig_configuration.set('abs_top_srcdir', wayland_protocols_srcdir)
+ pkgconfig_configuration.set('PACKAGE', 'wayland-protocols')
+ pkgconfig_configuration.set('WAYLAND_PROTOCOLS_VERSION', wayland_protocols_version)
+ 
+-pkg_install_dir = join_paths(get_option('datadir'), 'pkgconfig')
++pkg_install_dir = join_paths(get_option('libdir'), 'pkgconfig')
+ configure_file(
+ 	input: 'wayland-protocols.pc.in',
+ 	output: 'wayland-protocols.pc',

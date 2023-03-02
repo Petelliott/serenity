@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 13:31:33 -0700
+Subject: [PATCH] sdafas
+
+---
+ clients/meson.build | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/clients/meson.build b/clients/meson.build
+index ea5a0a3664f32ecaf235b422f255f2812acab5ed..45e9fc0976c16f1af0b711a45fd20ebd480eac58 100644
+--- a/clients/meson.build
++++ b/clients/meson.build
+@@ -185,14 +185,6 @@ demo_clients = [
+ 	},
+ 
+ 	{ 'basename': 'dnd' },
+-	{
+-		'basename': 'editor',
+-		'add_sources': [
+-			text_input_unstable_v1_client_protocol_h,
+-			text_input_unstable_v1_protocol_c,
+-		],
+-		'deps': [ 'pangocairo', 'gobject-2.0' ]
+-	},
+ 	{ 'basename': 'eventdemo' },
+ 	{ 'basename': 'flower' },
+ 	{

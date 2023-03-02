@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 13:03:51 -0700
+Subject: [PATCH] remove all egl clients
+
+---
+ clients/meson.build | 22 ----------------------
+ 1 file changed, 22 deletions(-)
+
+diff --git a/clients/meson.build b/clients/meson.build
+index 37e8bff48bed2522ccac8f8392d2c8329bbf0d82..baf89edfccbbad618333172cb76e5f3785e9cbe7 100644
+--- a/clients/meson.build
++++ b/clients/meson.build
+@@ -57,24 +57,6 @@ simple_clients = [
+ 		],
+ 		'dep_objs': [ dep_wayland_client, dep_libshared ]
+ 	},
+-	{
+-		'name': 'egl',
+-		'sources': [
+-			'simple-egl.c',
+-			xdg_shell_client_protocol_h,
+-			xdg_shell_protocol_c,
+-			ivi_application_client_protocol_h,
+-			ivi_application_protocol_c,
+-		],
+-		'dep_objs': [
+-			dep_libm,
+-			dep_libshared,
+-			dep_matrix_c,
+-			dep_wayland_client,
+-		],
+-		'deps': [ 'egl', 'wayland-egl', 'glesv2', 'wayland-cursor' ],
+-		'options': [ 'renderer-gl' ]
+-	},
+ 	# weston-simple-im is handled specially separately due to install_dir and odd window.h usage
+ 	{
+ 		'name': 'shm',
+@@ -251,10 +233,6 @@ demo_clients = [
+ 	},
+ 	{ 'basename': 'smoke' },
+ 	{ 'basename': 'stacking' },
+-	{
+-		'basename': 'subsurfaces',
+-		'deps': [ 'egl', 'glesv2', 'wayland-egl' ]
+-	},
+ 	{ 'basename': 'transformed' },
+ ]
+ 

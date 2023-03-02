@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Fri, 17 Feb 2023 00:57:00 -0700
+Subject: [PATCH] use native wayland-scanner
+
+---
+ meson.build | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 245e7b1990b03ecc1ed2e3124178926a6f249983..7fdd84600a9f702e33c09c2bfecad9cdd6e562dc 100644
+--- a/meson.build
++++ b/meson.build
+@@ -476,13 +476,12 @@ if build_tools
+     if get_option('enable-wayland')
+         wayland_client_dep = dependency('wayland-client', version: '>=1.2.0', required: false)
+         wayland_protocols_dep = dependency('wayland-protocols', version: '>=1.12', required: false)
+-        wayland_scanner_dep = dependency('wayland-scanner', required: false, native: true)
+-        if not wayland_client_dep.found() or not wayland_protocols_dep.found() or not wayland_scanner_dep.found()
++        if not wayland_client_dep.found() or not wayland_protocols_dep.found()
+             error('''The Wayland xkbcli programs require wayland-client >= 1.2.0, wayland-protocols >= 1.7 which were not found.
+ You can disable the Wayland xkbcli programs with -Denable-wayland=false.''')
+         endif
+ 
+-        wayland_scanner = find_program(wayland_scanner_dep.get_variable(pkgconfig: 'wayland_scanner'))
++        wayland_scanner = find_program('wayland-scanner')
+         wayland_scanner_code_gen = generator(
+             wayland_scanner,
+             output: '@BASENAME@-protocol.c',

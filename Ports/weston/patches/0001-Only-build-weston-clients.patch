@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Fri, 17 Feb 2023 01:04:55 -0700
+Subject: [PATCH] Only build weston clients
+
+---
+ meson.build | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 82119acac6cb5cc8e42ee39907bbdb12a2fda5e9..ca706570d69665ef90eeb8d322013c8a9346adc2 100644
+--- a/meson.build
++++ b/meson.build
+@@ -141,18 +141,11 @@ if dep_xkbcommon.version().version_compare('>= 0.5.0')
+ 	config_h.set('HAVE_XKBCOMMON_COMPOSE', '1')
+ endif
+ 
+-dep_wayland_server = dependency('wayland-server', version: '>= 1.20.0')
+ dep_wayland_client = dependency('wayland-client', version: '>= 1.20.0')
+-dep_pixman = dependency('pixman-1', version: '>= 0.25.2')
+-dep_libinput = dependency('libinput', version: '>= 0.8.0')
+-dep_libevdev = dependency('libevdev')
+ dep_libm = cc.find_library('m')
+ dep_libdl = cc.find_library('dl')
+-dep_libdrm = dependency('libdrm', version: '>= 2.4.108')
+-dep_libdrm_headers = dep_libdrm.partial_dependency(compile_args: true)
+ dep_threads = dependency('threads')
+ 
+-dep_lcms2 = dependency('lcms2', version: '>= 2.9', required: false)
+ 
+ prog_python = import('python').find_installation('python3')
+ files_xxd_py = files('tools/xxd.py')
+@@ -161,19 +154,7 @@ cmd_xxd = [ prog_python, files_xxd_py, '@INPUT@', '@OUTPUT@' ]
+ subdir('include')
+ subdir('protocol')
+ subdir('shared')
+-subdir('libweston')
+-subdir('xwayland')
+-subdir('shell-utils')
+-subdir('compositor')
+-subdir('desktop-shell')
+-subdir('fullscreen-shell')
+-subdir('ivi-shell')
+-subdir('kiosk-shell')
+-subdir('remoting')
+-subdir('pipewire')
+ subdir('clients')
+-subdir('wcap')
+-subdir('tests')
+ subdir('data')
+ subdir('man')
+ 

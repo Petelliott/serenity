@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Mon, 27 Feb 2023 20:41:15 -0700
+Subject: [PATCH] Remove pixman dependency from shared
+
+---
+ shared/meson.build | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/shared/meson.build b/shared/meson.build
+index 0f05dc1278c5b0b2a296bb4b1187e01c33659a9b..a41ce9a09566f6509a9e5ea1af0b7c9b4123a596 100644
+--- a/shared/meson.build
++++ b/shared/meson.build
+@@ -52,7 +52,6 @@ deps_cairo_shared = [
+ 	dep_libshared,
+ 	dependency('cairo'),
+ 	dependency('libpng'),
+-	dep_pixman,
+ 	dep_libm,
+ ]
+ 

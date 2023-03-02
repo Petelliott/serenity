@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 12:50:54 -0700
+Subject: [PATCH] Remove clients that use libdrm
+
+---
+ clients/meson.build | 38 --------------------------------------
+ 1 file changed, 38 deletions(-)
+
+diff --git a/clients/meson.build b/clients/meson.build
+index ae0fbce8f3ccbbfc4f30b312f77ab42fce88fc01..37e8bff48bed2522ccac8f8392d2c8329bbf0d82 100644
+--- a/clients/meson.build
++++ b/clients/meson.build
+@@ -57,44 +57,6 @@ simple_clients = [
+ 		],
+ 		'dep_objs': [ dep_wayland_client, dep_libshared ]
+ 	},
+-	{
+-		'name': 'dmabuf-egl',
+-		'sources': [
+-			'simple-dmabuf-egl.c',
+-			linux_dmabuf_unstable_v1_client_protocol_h,
+-			linux_dmabuf_unstable_v1_protocol_c,
+-			linux_explicit_synchronization_unstable_v1_client_protocol_h,
+-			linux_explicit_synchronization_unstable_v1_protocol_c,
+-			xdg_shell_client_protocol_h,
+-			xdg_shell_protocol_c,
+-			weston_direct_display_client_protocol_h,
+-			weston_direct_display_protocol_c,
+-			fullscreen_shell_unstable_v1_client_protocol_h,
+-			fullscreen_shell_unstable_v1_protocol_c,
+-		],
+-		'dep_objs': [
+-			dep_wayland_client,
+-			dep_libdrm,
+-			dep_libm
+-		],
+-		'deps': [ 'egl', 'glesv2', 'gbm' ],
+-		'options': [ 'renderer-gl' ]
+-	},
+-	{
+-		'name': 'dmabuf-v4l',
+-		'sources': [
+-			'simple-dmabuf-v4l.c',
+-			linux_dmabuf_unstable_v1_client_protocol_h,
+-			linux_dmabuf_unstable_v1_protocol_c,
+-			xdg_shell_client_protocol_h,
+-			xdg_shell_protocol_c,
+-			weston_direct_display_client_protocol_h,
+-			weston_direct_display_protocol_c,
+-			fullscreen_shell_unstable_v1_client_protocol_h,
+-			fullscreen_shell_unstable_v1_protocol_c,
+-		],
+-		'dep_objs': [ dep_wayland_client, dep_libdrm_headers ]
+-	},
+ 	{
+ 		'name': 'egl',
+ 		'sources': [

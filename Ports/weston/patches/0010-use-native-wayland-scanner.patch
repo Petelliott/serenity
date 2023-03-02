@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peter Elliott <pelliott@ualberta.ca>
+Date: Tue, 28 Feb 2023 13:37:16 -0700
+Subject: [PATCH] use native wayland-scanner
+
+---
+ protocol/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/protocol/meson.build b/protocol/meson.build
+index ba52089bfe617072a0a811875fe13cfedd3a923c..023879699857de5044d84ab2d74a45bed32c0d87 100644
+--- a/protocol/meson.build
++++ b/protocol/meson.build
+@@ -1,5 +1,5 @@
+ dep_scanner = dependency('wayland-scanner', native: true)
+-prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
++prog_scanner = find_program('wayland-scanner')
+ 
+ dep_wp = dependency('wayland-protocols', version: '>= 1.26',
+ 	fallback: ['wayland-protocols', 'wayland_protocols'])
