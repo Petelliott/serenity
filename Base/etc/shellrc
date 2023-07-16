@@ -2,7 +2,6 @@
 
 alias fm=FileManager
 alias mag=Magnifier
-alias sh=Shell
 alias tb=Taskbar
 alias te=TextEditor
 alias he=HexEditor
