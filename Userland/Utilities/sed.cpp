@@ -2,6 +2,7 @@
  * Copyright (c) 2022, Eli Youngs <eli.m.youngs@gmail.com>
  * Copyright (c) 2023, Rodrigo Tobar <rtobarc@gmail.com>
  * Copyright (c) 2023, kleines Filmröllchen <filmroellchen@serenityos.org>
+ * Copyright (c) 2023, Peter Elliott <pelliott@serenityos.org>
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -342,12 +343,46 @@ struct WArguments : FilepathArgument<WArguments> {
 };
 
 struct YArguments {
-    StringView characters;
-    StringView replacements;
+    Utf8View characters;
+    Utf8View replacements;
 
     static SedErrorOr<YArguments> parse(GenericLexer& lexer)
     {
-        return SedError::parsing_error(lexer, "not implemented"sv);
+        auto generic_error_message = "Incomplete transliterate (y) command"sv;
+
+        if (lexer.is_eof())
+            return SedError::parsing_error(lexer, generic_error_message);
+
+        auto delimiter = lexer.consume();
+        if (delimiter == '\n' || delimiter == '\\')
+            return SedError::parsing_error(lexer, "\\n and \\ cannot be used as delimiters."sv);
+
+        Utf8View characters(lexer.consume_until([is_escape_sequence = false, delimiter](char c) mutable {
+            if (c == delimiter && !is_escape_sequence)
+                return true;
+            is_escape_sequence = c == '\\' && !is_escape_sequence;
+            return false;
+        }));
+
+        if (!lexer.consume_specific(delimiter))
+            return SedError::parsing_error(lexer, generic_error_message);
+
+        Utf8View replacements(lexer.consume_until([is_escape_sequence = false, delimiter](char c) mutable {
+            if (c == delimiter && !is_escape_sequence)
+                return true;
+            is_escape_sequence = c == '\\' && !is_escape_sequence;
+            return false;
+        }));
+
+        // According to Posix, "y/x/y" is an invalid substitution command.
+        // It must have a closing delimiter: "y/x/y/"
+        if (!lexer.consume_specific(delimiter))
+            return SedError::parsing_error(lexer, "The transliterate command was not properly terminated."sv);
+
+        if (characters.length() != replacements.length())
+            return SedError::formatted("transliterate: characters and replacements are different lengths"sv);
+
+        return YArguments { characters, replacements };
     }
 };
 
@@ -830,6 +865,27 @@ static ErrorOr<CycleDecision> apply(Command const& command, StringBuilder& patte
     case 'x':
         swap(pattern_space, hold_space);
         break;
+    case 'y': {
+        Utf8View pattern_space_u8(pattern_space.string_view());
+        auto const& y_args = command.arguments->get<YArguments>();
+        HashMap<u32, u32> replacement_map;
+        auto replacement_iter = y_args.replacements.begin();
+        for (auto ch : y_args.characters) {
+            replacement_map.set(ch, *replacement_iter);
+            ++replacement_iter;
+        }
+        StringBuilder result;
+        for (auto ch : pattern_space_u8) {
+            auto replace_with = replacement_map.get(ch);
+            if (replace_with.has_value()) {
+                result.append(replace_with.value());
+            } else {
+                result.append(ch);
+            }
+        }
+        pattern_space = result;
+        break;
+    }
     case '=':
         outln("{}", input.line_number());
         break;
@@ -947,6 +1003,7 @@ ErrorOr<int> serenity_main(Main::Arguments args)
             warnln("No script specified, aborting");
             return 1;
         }
+
         if (!script.add_script_part(pos_args[0])) {
             return 1;
         }
