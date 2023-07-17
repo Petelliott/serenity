@@ -36,6 +36,7 @@ target_env() {
     elif [ "$(uname -s)" = "SerenityOS" ]; then
         export SERENITY_ARCH="$(uname -m)"
         export SERENITY_INSTALL_ROOT=""
+        export SERENITY_PORT_DIRS="${SERENITY_PORT_DIRS:+${SERENITY_PORT_DIRS}:}/usr/Ports"
     else
         >&2 echo "Error: .hosted_defs.sh is missing and we are not running on Serenity."
         exit 1
